@@ -1,0 +1,35 @@
+{
+    "name": "ppl_DM_Master_Load",
+    "properties": {
+        "activities": [
+            {
+                "name": "epl_Employees_To_DM",
+                "type": "ExecutePipeline",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "ppl_Employees_To_DM",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true
+                }
+            },
+            {
+                "name": "epl_Students_To_DM",
+                "type": "ExecutePipeline",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "ppl_Students_To_DM",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true
+                }
+            }
+        ],
+        "annotations": []
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
