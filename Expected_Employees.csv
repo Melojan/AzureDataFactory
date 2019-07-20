@@ -1,0 +1,10 @@
+empid,lastname,firstname,title,titleofcourtesy,birthdate,hiredate,address,city,region,postalcode,country,phone
+1,Hannah,Loft,CEO,Ms.,09/12/1968,01/05/2013,"7890 - 20th Ave. E., Apt. 2A",Seattle,WA,10003,USA,(206) 555-0101
+2,Shanthi,Christian,"Vice President, Sales",Dr.,20/02/1972,14/08/2013,9012 W. Capital Way,Tacoma,WA,10001,USA,(206) 555-0100
+3,Lew,Judy,Sales Manager,Ms.,25/06/1983,01/04/2013,2345 Moss Bay Blvd.,Kirkland,WA,10007,USA,(206) 555-0103
+4,Peled,Yael,Sales Representative,Mrs.,19/10/1957,03/05/2014,5678 Old Redmond Rd.,Redmond,WA,10009,USA,(206) 555-0104
+5,Mortensen,Sven,Sales Manager,Mr.,04/03/1975,17/10/2014,8901 Garrett Hill,London,NULL,10004,UK,(71) 234-5678
+6,Eden,Hazard,Sales Representative,Mr.,03/07/1991,17/10/2014,"3456 Coventry House, Miner Rd.",London,NULL,10005,UK,(71) 345-6789
+7,Melojan,Thas,Sales Representative,Mr.,24/05/1996,02/01/2015,"6789 Edgeham Hollow, Winchester Way",London,NULL,10002,UK,(71) 123-4567
+8,Cameron,Maria,Sales Representative,Ms.,09/01/1978,05/03/2015,4567 - 11th Ave. N.E.,Seattle,WA,10006,USA,(206) 555-0102
+9,Doyle,Patricia,Sales Representative,Ms.,27/01/1986,15/11/2015,1234 Houndstooth Rd.,London,NULL,10008,UK,(71) 456-7890
