@@ -1,0 +1,233 @@
+{
+    "name": "ppl_Employees_To_STG",
+    "properties": {
+        "activities": [
+            {
+                "name": "spa_Truncate_Employee_Table",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[dbo.Truncate_Table]",
+                    "storedProcedureParameters": {
+                        "TableName": {
+                            "value": {
+                                "value": "dbo.Employees",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureSqlDatabase1",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "lkp_Employees_To_Load",
+                "type": "Lookup",
+                "dependsOn": [
+                    {
+                        "activity": "cpy_File_To_STG",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureSqlSource",
+                        "sqlReaderQuery": "SELECT [empid],\n       [lastname],\n       [firstname],\n       [title],\n       [titleofcourtesy],\n       [birthdate],\n       [hiredate],\n       [address],\n       [city],\n       [region],\n       [postalcode],\n       [country],\n       [phone]\nFROM [dbo].[Employees]"
+                    },
+                    "dataset": {
+                        "referenceName": "Employees_Table",
+                        "type": "DatasetReference"
+                    },
+                    "firstRowOnly": false
+                }
+            },
+            {
+                "name": "cpy_File_To_STG",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "spa_Truncate_Employee_Table",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "BlobSource",
+                        "recursive": false
+                    },
+                    "sink": {
+                        "type": "AzureSqlSink"
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "mappings": [
+                            {
+                                "source": {
+                                    "name": "empid"
+                                },
+                                "sink": {
+                                    "name": "empid",
+                                    "type": "Int32"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "lastname"
+                                },
+                                "sink": {
+                                    "name": "lastname",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "firstname"
+                                },
+                                "sink": {
+                                    "name": "firstname",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "title"
+                                },
+                                "sink": {
+                                    "name": "title",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "titleofcourtesy"
+                                },
+                                "sink": {
+                                    "name": "titleofcourtesy",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "birthdate"
+                                },
+                                "sink": {
+                                    "name": "birthdate",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "hiredate"
+                                },
+                                "sink": {
+                                    "name": "hiredate",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "address"
+                                },
+                                "sink": {
+                                    "name": "address",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "city"
+                                },
+                                "sink": {
+                                    "name": "city",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "region"
+                                },
+                                "sink": {
+                                    "name": "region",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "postalcode"
+                                },
+                                "sink": {
+                                    "name": "postalcode",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "country"
+                                },
+                                "sink": {
+                                    "name": "country",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "phone"
+                                },
+                                "sink": {
+                                    "name": "phone",
+                                    "type": "String"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "AzureBlob2",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "Employees_Table",
+                        "type": "DatasetReference"
+                    }
+                ]
+            }
+        ],
+        "annotations": []
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
