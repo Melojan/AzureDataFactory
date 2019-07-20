@@ -1,0 +1,42 @@
+{
+    "name": "ppl_Master",
+    "properties": {
+        "activities": [
+            {
+                "name": "exp_Files_To_STG",
+                "type": "ExecutePipeline",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "ppl_Files_To_STG_Master",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true
+                }
+            },
+            {
+                "name": "epl_DM",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "exp_Files_To_STG",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "ppl_DM_Master_Load",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true
+                }
+            }
+        ],
+        "annotations": []
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
