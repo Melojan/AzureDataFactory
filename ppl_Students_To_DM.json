@@ -1,0 +1,317 @@
+{
+    "name": "ppl_Students_To_DM",
+    "properties": {
+        "activities": [
+            {
+                "name": "names",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[names]"
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureSqlDatabase1",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "olderThan25",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "names",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[TotalNumberOfStudentsHigherThan25]",
+                    "storedProcedureParameters": {
+                        "Age": {
+                            "value": {
+                                "value": "@activity('names').output.executionDuration",
+                                "type": "Expression"
+                            },
+                            "type": "Int"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureSqlDatabase1",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "checkRegister",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "names",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[checkRegister]",
+                    "storedProcedureParameters": {
+                        "FirstName": {
+                            "value": {
+                                "value": "@pipeline().DataFactory",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        },
+                        "Register": {
+                            "value": {
+                                "value": "@pipeline().DataFactory",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureSqlDatabase1",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "checkQuery",
+                "type": "Lookup",
+                "dependsOn": [
+                    {
+                        "activity": "checkRegister",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureSqlSource",
+                        "sqlReaderQuery": "SELECT FirstName FROM [dbo].[Student]\nWHERE FirstName LIKE 'M%'"
+                    },
+                    "dataset": {
+                        "referenceName": "Student_Table",
+                        "type": "DatasetReference"
+                    },
+                    "firstRowOnly": true
+                }
+            },
+            {
+                "name": "If Condition1",
+                "type": "IfCondition",
+                "dependsOn": [
+                    {
+                        "activity": "checkQuery",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "expression": {
+                        "value": "@{equals(activity('checkQuery').output.firstRow.FirstName,'Marco')}",
+                        "type": "Expression"
+                    },
+                    "ifFalseActivities": [
+                        {
+                            "name": "IfFalse",
+                            "type": "Lookup",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "source": {
+                                    "type": "AzureSqlSource"
+                                },
+                                "dataset": {
+                                    "referenceName": "Student_Table",
+                                    "type": "DatasetReference"
+                                },
+                                "firstRowOnly": false
+                            }
+                        }
+                    ],
+                    "ifTrueActivities": [
+                        {
+                            "name": "IfTrue",
+                            "type": "Lookup",
+                            "dependsOn": [
+                                {
+                                    "activity": "Stored Procedure1",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "source": {
+                                    "type": "AzureSqlSource"
+                                },
+                                "dataset": {
+                                    "referenceName": "Student_Table",
+                                    "type": "DatasetReference"
+                                },
+                                "firstRowOnly": false
+                            }
+                        },
+                        {
+                            "name": "Stored Procedure1",
+                            "type": "SqlServerStoredProcedure",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "storedProcedureName": "[dbo].[names]"
+                            },
+                            "linkedServiceName": {
+                                "referenceName": "AzureSqlDatabase1",
+                                "type": "LinkedServiceReference"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "ForEach2",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "CheckAge",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('CheckAge').output.value",
+                        "type": "Expression"
+                    },
+                    "isSequential": false,
+                    "activities": [
+                        {
+                            "name": "ListOfAge",
+                            "type": "SqlServerStoredProcedure",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "7.00:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "storedProcedureName": "[dbo].[TotalNumberOfStudentsHigherThan25]",
+                                "storedProcedureParameters": {
+                                    "Age": {
+                                        "value": {
+                                            "value": "@item().Age",
+                                            "type": "Expression"
+                                        },
+                                        "type": "Int32"
+                                    }
+                                }
+                            },
+                            "linkedServiceName": {
+                                "referenceName": "AzureSqlDatabase1",
+                                "type": "LinkedServiceReference"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "CheckAge",
+                "type": "Lookup",
+                "dependsOn": [
+                    {
+                        "activity": "olderThan25",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureSqlSource",
+                        "sqlReaderQuery": "SELECT Age FROM [dbo].[Student]"
+                    },
+                    "dataset": {
+                        "referenceName": "Student_Table",
+                        "type": "DatasetReference"
+                    },
+                    "firstRowOnly": false
+                }
+            }
+        ],
+        "annotations": []
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
